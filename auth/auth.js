@@ -20,3 +20,23 @@ module.exports.verifyUser = (req, res, next) => {
     res.json({ msg: "Invalid Token", success: false });
   }
 };
+
+module.exports.verifyAdmin = (req, res, next) => {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const data = jwt.verify(token, "anysecretkey");
+      console.log(data);
+      const adminData = user
+        .findOne({ _id: data.uid })
+        .then(function (result) {
+          req.adminInfo = result;
+          console.log(result);
+          next();
+        })
+        .catch(function (e) {
+          res.json({ msg: "Invalid Token", success: false });
+        });
+    } catch (e) {
+      res.json({ msg: "Invalid Token", success: false });
+    }
+  };
