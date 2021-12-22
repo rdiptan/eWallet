@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const admin = require("../models/userModel");
 const auth = require("../auth/auth");
 
-router.post("/admin/newadmin", auth.verifyAdmin, function(req, res) {
+router.post("/admin/newadmin", auth.verifyAdmin, function (req, res) {
   const email = req.body.email;
   admin.findOne({ email: email }).then(function (data) {
     if (data != null) {
@@ -32,6 +32,23 @@ router.post("/admin/newadmin", auth.verifyAdmin, function(req, res) {
         .catch(function (e) {
           res.send({ msg: e, success: false });
         });
+    });
+  });
+});
+
+router.post("/admin/login", (req, res) => {
+  const email = req.body.email;
+  user.findOne({ email: email }).then((admin_data) => {
+    if (admin_data === null) {
+      return res.json({ msg: "Email Not Found", success: false });
+    }
+    const password = req.body.password;
+    bcryptjs.compare(password, user_data.password, (e, result) => {
+      if (result === false) {
+        return res.json({ msg: "Password Incorrect", success: false });
+      }
+      const token = jwt.sign({ aid: admin_data._id }, "anysecretkey");
+      res.json({ token: token });
     });
   });
 });
