@@ -5,38 +5,32 @@ module.exports.verifyUser = (req, res, next) => {
   try {
     token = req.headers.authorization.split(" ")[1];
     const data = jwt.verify(token, "anysecretkey");
-    console.log(data);
-    const userData = user
-      .findOne({ _id: data.uid })
+    user.findOne({ $and: [{ _id: data.uid }, { is_admin: false }] })
       .then(function (result) {
         req.userInfo = result;
-        console.log(result);
         next();
       })
       .catch(function (e) {
-        res.json({ msg: "Invalid Token", success: false });
+        res.json({ msg: e, success: false });
       });
-  } catch (e) {
+  } catch (error) {
     res.json({ msg: "Invalid Token", success: false });
   }
 };
 
 module.exports.verifyAdmin = (req, res, next) => {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const data = jwt.verify(token, "anysecretkey");
-      console.log(data);
-      const adminData = user
-        .findOne({ _id: data.uid })
-        .then(function (result) {
-          req.adminInfo = result;
-          console.log(result);
-          next();
-        })
-        .catch(function (e) {
-          res.json({ msg: "Invalid Token", success: false });
-        });
-    } catch (e) {
-      res.json({ msg: "Invalid Token", success: false });
-    }
-  };
+  try {
+    token = req.headers.authorization.split(" ")[1];
+    const data = jwt.verify(token, "anysecretkey");
+    user.findOne({ $and: [{ _id: data.uid }, { is_admin: true }] })
+      .then(function (result) {
+        req.adminInfo = result;
+        next();
+      })
+      .catch(function (e) {
+        res.json({ msg: e, success: false });
+      });
+  } catch (error) {
+    res.json({ msg: "Invalid Token", success: false });
+  }
+};

@@ -52,22 +52,25 @@ router.post("/user/login", (req, res) => {
   });
 });
 
-router.get("/user/profile", auth.verifyUser, function (req, res) {
-  res.json({
-    fname: req.userInfo.fname,
-    lname: req.userInfo.lname,
-    email: req.userrInfo.email,
+router.get("/user/profile/:id", auth.verifyUser, (req, res) => {
+  user.findById(req.params.id).then((user_data) => {
+    res.json({ user_data, success: true });
+  }).catch((e) => {
+    res.json({ msg: e, success: false });
   });
 });
 
-router.put("/user/profile/update", auth.verifyUser, function (req, res) {
+router.put("/user/profile/update/:id", auth.verifyUser, uploadProfile.single("image"), function (req, res) {
   const id = req.customerInfo._id;
   const fname = req.body.fname;
   const lname = req.body.lname;
+  const url = req.protocol + '://' + req.get('host');
+  const image = url + '/images/' + req.file.filename;
+
   user
-    .updateOne({ _id: id }, { fname: fname }, { lname: lname })
-    .then(function () {
-      res.json({ msg: "Profile Updated Successfully", success: true });
+    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
+    .then(function (user_data) {
+      res.json({ user_data, msg: "Profile Updated Successfully", success: true });
     })
     .catch(function (e) {
       res.json({ msg: e, success: false });

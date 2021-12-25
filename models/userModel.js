@@ -22,17 +22,21 @@ const user = mongoose.model("user", {
     },
     password: {
         type: String,
-        required: true
+        required: true,
+    },
+    image: {
+        type: String,
+        required: false,
     },
     created_at: {
         type: Date,
         required: true,
-        default: Date.now
+        default: Date.now,
     },
     is_admin: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
     }
 });
 
