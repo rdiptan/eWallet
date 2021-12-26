@@ -52,29 +52,41 @@ router.post("/user/login", (req, res) => {
   });
 });
 
-router.get("/user/profile/:id", auth.verifyUser, (req, res) => {
-  user.findById(req.params.id).then((user_data) => {
-    res.json({ user_data, success: true });
-  }).catch((e) => {
-    res.json({ msg: e, success: false });
-  });
-});
-
-router.put("/user/profile/update/:id", auth.verifyUser, uploadProfile.single("image"), function (req, res) {
-  const id = req.customerInfo._id;
-  const fname = req.body.fname;
-  const lname = req.body.lname;
-  const url = req.protocol + '://' + req.get('host');
-  const image = url + '/images/' + req.file.filename;
-
+router.get("/user/profile", auth.verifyUser, (req, res) => {
   user
-    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
-    .then(function (user_data) {
-      res.json({ user_data, msg: "Profile Updated Successfully", success: true });
+    .findById(req.userInfo._id)
+    .then((user_data) => {
+      res.json({ user_data, success: true });
     })
-    .catch(function (e) {
+    .catch((e) => {
       res.json({ msg: e, success: false });
     });
 });
+
+router.put(
+  "/user/profile/update",
+  auth.verifyUser,
+  uploadProfile.single("image"),
+  function (req, res) {
+    const id = req.userInfo._id;
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const url = req.protocol + "://" + req.get("host");
+    const image = url + "/images/" + req.file.filename;
+
+    user
+      .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
+      .then(function (user_data) {
+        res.json({
+          user_data,
+          msg: "Profile Updated Successfully",
+          success: true,
+        });
+      })
+      .catch(function (e) {
+        res.json({ msg: e, success: false });
+      });
+  }
+);
 
 module.exports = router;

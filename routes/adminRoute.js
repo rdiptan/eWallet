@@ -4,6 +4,7 @@ const router = new express.Router();
 const jwt = require("jsonwebtoken");
 const admin = require("../models/userModel");
 const auth = require("../auth/auth");
+const uploadProfile = require("../files/uploadProfile");
 
 router.post("/admin/newadmin", auth.verifyAdmin, function (req, res) {
   const email = req.body.email;
@@ -52,5 +53,41 @@ router.post("/admin/login", (req, res) => {
     });
   });
 });
+
+router.get("/admin/profile", auth.verifyAdmin, (req, res) => {
+  user
+    .findById(req.adminInfo._id)
+    .then((user_data) => {
+      res.json({ user_data, success: true });
+    })
+    .catch((e) => {
+      res.json({ msg: e, success: false });
+    });
+});
+
+router.put(
+  "/admin/profile/update",
+  auth.verifyAdmin,
+  uploadProfile.single("image"),
+  function (req, res) {
+    const id = req.adminInfo._id;
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const image = req.file.filename;
+
+    user
+      .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
+      .then(function (user_data) {
+        res.json({
+          user_data,
+          msg: "Profile Updated Successfully",
+          success: true,
+        });
+      })
+      .catch(function (e) {
+        res.json({ msg: e, success: false });
+      });
+  }
+);
 
 module.exports = router;
