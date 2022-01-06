@@ -4,7 +4,7 @@ const user = require("../models/userModel");
 module.exports.verifyUser = (req, res, next) => {
   try {
     token = req.headers.authorization.split(" ")[1];
-    const data = jwt.verify(token, "anysecretkey");
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     user
       .findOne({ $and: [{ _id: data.uid }, { is_admin: false }] })
       .then(function (result) {
@@ -22,7 +22,7 @@ module.exports.verifyUser = (req, res, next) => {
 module.exports.verifyAdmin = (req, res, next) => {
   try {
     token = req.headers.authorization.split(" ")[1];
-    const data = jwt.verify(token, "anysecretkey");
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     user
       .findOne({ $and: [{ _id: data.uid }, { is_admin: true }] })
       .then(function (result) {
