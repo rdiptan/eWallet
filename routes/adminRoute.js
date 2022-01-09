@@ -10,11 +10,11 @@ const {
   updateAdminProfileController,
 } = require("../controllers/adminController");
 
-router.post("newadmin", auth.verifyAdmin, addAdminController);
-router.post("login", adminLoginController);
-router.get("profile", auth.verifyAdmin, getAdminProfileController);
+router.post("/newadmin", auth.verifyAdmin, addAdminController);
+router.post("/login", adminLoginController);
+router.get("/profile", auth.verifyAdmin, getAdminProfileController);
 router.put(
-  "profile/update",
+  "/profile/update",
   auth.verifyAdmin,
   uploadProfile.single("image"),
   updateAdminProfileController
