@@ -25,7 +25,7 @@ const userDetailsSchema = new Schema({
   dob: {
     type: Date,
   },
-  status: {
+  is_verified: {
     type: Boolean,
     required: true,
     default: false,

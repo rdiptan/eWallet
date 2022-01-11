@@ -2,9 +2,10 @@ const express = require("express");
 const router = new express.Router();
 const auth = require("../middleware/auth");
 
-const {newTransactionController, viewTransactionController} = require("../controllers/transactionController");
+const {newTransactionController, viewTransactionController, viewTransactionControllerById} = require("../controllers/transactionController");
 
-router.post("/user/newtransaction", auth.verifyUser, newTransactionController);
-router.get("/user/transactions", auth.verifyUser, viewTransactionController);
+router.post("/new", auth.verifyUser, newTransactionController);
+router.get("/view", auth.verifyUser, viewTransactionController);
+router.get("/view/:id", auth.verifyUser, viewTransactionControllerById);
 
 module.exports = router;

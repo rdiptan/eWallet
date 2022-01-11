@@ -85,4 +85,24 @@ const viewTransactionController = (req, res) => {
     });
 };
 
-module.exports = { newTransactionController, viewTransactionController };
+const viewTransactionControllerById = (req, res) => {
+  const transaction_id = req.params.id;
+  transaction
+    .findOne({ _id: transaction_id })
+    .then(function (data) {
+      if (data === null) {
+        res.send({ msg: "No Transaction Found", success: false });
+        return;
+      }
+      res.send({ data, success: true });
+    })
+    .catch(function (err) {
+      res.send({ msg: err, success: false });
+    });
+};
+
+module.exports = {
+  newTransactionController,
+  viewTransactionController,
+  viewTransactionControllerById,
+};

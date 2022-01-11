@@ -13,7 +13,7 @@ const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
 const transactionRoute = require("./routes/transactionRoute");
-app.use(transactionRoute);
+app.use("/user/transaction",transactionRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running!");
