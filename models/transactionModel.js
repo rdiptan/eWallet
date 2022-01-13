@@ -33,6 +33,16 @@ const transactionSchema = new Schema({
     lowercase: true,
     maxlength: 100,
   },
+  debit: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  credit: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("transaction", transactionSchema);

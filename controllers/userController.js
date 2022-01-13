@@ -1,6 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const user = require("../models/userModel");
+const userdetail = require("../models/userDetailsModel");
 
 const registrationController = (req, res) => {
   const email = req.body.email;
@@ -21,11 +22,21 @@ const registrationController = (req, res) => {
       });
       userData
         .save()
-        .then(function () {
-          res.send({ msg: "User Registered Successfully", success: true });
+        .then(function (result) {
+          const userdetailData = new userdetail({
+            user: result._id,
+          });
+          userdetailData
+            .save()
+            .then(function () {
+              res.json({ msg: "User Registered Successfully", success: true });
+            })
+            .catch(function (e) {
+              res.json({ msg: e, success: false });
+            });
         })
         .catch(function (e) {
-          res.send({ msg: e, success: false });
+          res.json({ msg: e, success: false });
         });
     });
   });
@@ -51,6 +62,7 @@ const loginController = (req, res) => {
 const getprofileController = (req, res) => {
   user
     .findById(req.userInfo._id)
+    .select("-password", "-__v", "-_id", "-is_admin")
     .then((user_data) => {
       res.json({ user_data, success: true });
     })
@@ -65,7 +77,6 @@ const updateProfileController = (req, res) => {
   const lname = req.body.lname;
   const url = req.protocol + "://" + req.get("host");
   const image = url + "/images/" + req.file.filename;
-
   user
     .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
     .then(function (user_data) {

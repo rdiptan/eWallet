@@ -23,7 +23,7 @@ const newTransactionController = (req, res) => {
     });
     transaction_data
       .save()
-      .then(function () {
+      .then(function (result) {
         userdetail
           .findOne({ user: from_id })
           .then(function (from_data) {
@@ -35,6 +35,10 @@ const newTransactionController = (req, res) => {
             from_data
               .save()
               .then(function () {
+                transaction.updateOne(
+                  { _id: result._id },
+                  { $set: { debit: true } }
+                );
                 userdetail
                   .findOne({ user: to_id })
                   .then(function (to_data) {
@@ -42,7 +46,11 @@ const newTransactionController = (req, res) => {
                     to_data
                       .save()
                       .then(function () {
-                        res.send({
+                        transaction.updateOne(
+                          { _id: result._id },
+                          { $set: { credit: true } }
+                        );
+                        res.json({
                           msg: "Transaction Successful",
                           success: true,
                         });
@@ -72,32 +80,107 @@ const newTransactionController = (req, res) => {
 const viewTransactionController = (req, res) => {
   const user_id = req.userInfo._id;
   transaction
-    .find({ $or: [{ from: user_id }, { to: user_id }] })
+    .aggregate([
+      { $match: { $or: [{ from: user_id }, { to: user_id }] } },
+      {
+        $lookup: {
+          from: "user",
+          localField: "from",
+          foreignField: "_id",
+          as: "from_user",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "to",
+          foreignField: "_id",
+          as: "to_user",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          amount: 1,
+          category: 1,
+          reason: 1,
+          transferred_at: 1,
+          debit: {
+            $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
+          },
+          credit: {
+            $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
+          },
+          from_user: { $arrayElemAt: ["$from_user", 0] },
+          to_user: { $arrayElemAt: ["$to_user", 0] },
+        },
+      },
+    ])
     .then(function (data) {
       if (data === null) {
-        res.send({ msg: "No Transaction Found", success: false });
+        res.json({ msg: "No Transaction Found", success: false });
         return;
       }
-      res.send({ data, success: true });
+      res.json({ data, success: true });
     })
     .catch(function (err) {
-      res.send({ msg: err, success: false });
+      res.json({ msg: err, success: false });
     });
 };
 
 const viewTransactionControllerById = (req, res) => {
   const transaction_id = req.params.id;
   transaction
-    .findOne({ _id: transaction_id })
+    .aggregate([
+      { $match: { _id: transaction_id } },
+      {
+        $lookup: {
+          from: "user",
+          localField: "from",
+          foreignField: "_id",
+          as: "from_user",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "to",
+          foreignField: "_id",
+          as: "to_user",
+        },
+      },
+      {
+        $project: {
+          from: 1,
+          to: 1,
+          amount: 1,
+          category: 1,
+          reason: 1,
+          debit: 1,
+          credit: 1,
+          transferred_at: 1,
+          from_user: {
+            fname: 1,
+            lname: 1,
+            email: 1,
+          },
+          to_user: {
+            fname: 1,
+            lname: 1,
+            email: 1,
+          },
+        },
+      },
+    ])
     .then(function (data) {
       if (data === null) {
-        res.send({ msg: "No Transaction Found", success: false });
+        res.json({ msg: "No Transaction Found", success: false });
         return;
       }
-      res.send({ data, success: true });
+      res.json({ data, success: true });
     })
     .catch(function (err) {
-      res.send({ msg: err, success: false });
+      res.json({ msg: err, success: false });
     });
 };
 

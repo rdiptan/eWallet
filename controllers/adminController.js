@@ -24,10 +24,10 @@ const addAdminController = (req, res) => {
       userData
         .save()
         .then(function () {
-          res.send({ msg: "Admin Added Successfully", success: true });
+          res.json({ msg: "Admin Added Successfully", success: true });
         })
         .catch(function (e) {
-          res.send({ msg: e, success: false });
+          res.json({ msg: e, success: false });
         });
     });
   });
@@ -52,9 +52,9 @@ const adminLoginController = (req, res) => {
 
 const getAdminProfileController = (req, res) => {
   user
-    .findById(req.adminInfo._id)
-    .then((user_data) => {
-      res.json({ user_data, success: true });
+    .findById(req.adminInfo._id).select("-password", "-__v", "-is_admin", "-_id")
+    .then((admin_data) => {
+      res.json({ admin_data, success: true });
     })
     .catch((e) => {
       res.json({ msg: e, success: false });
