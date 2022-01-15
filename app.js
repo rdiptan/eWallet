@@ -15,6 +15,9 @@ app.use("/admin", adminRoute);
 const transactionRoute = require("./routes/transactionRoute");
 app.use("/user/transaction",transactionRoute);
 
+const blogRoute = require("./routes/blogRoute");
+app.use("/blog", blogRoute);
+
 app.get("/", (req, res) => {
   res.send("API is running!");
 });

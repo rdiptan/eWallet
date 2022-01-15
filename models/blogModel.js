@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const user = require("./userModel");
 
 const blogSchema = new Schema({
-  user: {
+  author: {
     type: Schema.Types.ObjectId,
     ref: user,
   },
