@@ -77,7 +77,7 @@ const getBlogByIdController = (req, res) => {
     });
 };
 
-const viewBlogController = (req, res) => {
+const viewBlogAdminController = (req, res) => {
   blog
     .find({})
     .sort({ updated_at: -1 })
@@ -153,7 +153,7 @@ const deleteBlogController = (req, res) => {
 module.exports = {
   newBlogController,
   getBlogController,
-  viewBlogController,
+  viewBlogAdminController,
   getBlogByIdController,
   updateBlogController,
   deleteBlogController,

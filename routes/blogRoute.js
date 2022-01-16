@@ -6,7 +6,7 @@ const {
   newBlogController,
   getBlogController,
   getBlogByIdController,
-  viewBlogController,
+  viewBlogAdminController,
   updateBlogController,
   deleteBlogController,
 } = require("../controllers/blogController");
@@ -14,7 +14,7 @@ const {
 router.post("/new", auth.verifyAdmin, newBlogController);
 router.get("/view", getBlogController);
 router.get("/view/:id", getBlogByIdController);
-router.get("/admin/view", auth.verifyAdmin, viewBlogController);
+router.get("/admin/view", auth.verifyAdmin, viewBlogAdminController);
 router.put("/update/:id", auth.verifyAdmin, updateBlogController);
 router.delete("/delete/:id", auth.verifyAdmin, deleteBlogController);
 
