@@ -21,6 +21,9 @@ app.use("/blog", blogRoute);
 const reviewRoute = require("./routes/reviewRoute");
 app.use("/review", reviewRoute);
 
+const kycRoute = require("./routes/kycRoute");
+app.use("/kyc", kycRoute);
+
 app.get("/", (req, res) => {
   res.send("API is running!");
 });
