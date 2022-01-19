@@ -5,13 +5,11 @@ const uploadProfile = require("../middleware/upload");
 
 const {
   registrationController,
-  loginController,
   getprofileController,
   updateProfileController,
 } = require("../controllers/userController");
 
 router.post("/registration", registrationController);
-router.post("/login", loginController);
 router.get("/profile", auth.verifyUser, getprofileController);
 router.put(
   "/profile/update",

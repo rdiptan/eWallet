@@ -1,5 +1,4 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const user = require("../models/userModel");
 const userdetail = require("../models/userDetailsModel");
 
@@ -42,23 +41,6 @@ const registrationController = (req, res) => {
   });
 };
 
-const loginController = (req, res) => {
-  const email = req.body.email;
-  user.findOne({ email: email }).then((user_data) => {
-    if (user_data === null) {
-      return res.json({ msg: "Email Not Found", success: false });
-    }
-    const password = req.body.password;
-    bcryptjs.compare(password, user_data.password, (e, result) => {
-      if (result === false) {
-        return res.json({ msg: "Password Incorrect", success: false });
-      }
-      const token = jwt.sign({ uid: user_data._id }, process.env.JWT_SECRET);
-      res.json({ token: token });
-    });
-  });
-};
-
 const getprofileController = (req, res) => {
   user
     .findById(req.userInfo._id)
@@ -92,7 +74,6 @@ const updateProfileController = (req, res) => {
 };
 
 module.exports = {
-  loginController,
   registrationController,
   getprofileController,
   updateProfileController,

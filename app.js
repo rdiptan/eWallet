@@ -6,6 +6,9 @@ app.use(express.urlencoded({ extended: true }));
 
 require("./database/db");
 
+const loginRoute = require("./routes/loginRoute");
+app.use(loginRoute);
+
 const userRoute = require("./routes/userRoute");
 app.use("/user", userRoute);
 

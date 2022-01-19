@@ -5,13 +5,11 @@ const uploadProfile = require("../middleware/upload");
 
 const {
   addAdminController,
-  adminLoginController,
   getAdminProfileController,
   updateAdminProfileController,
 } = require("../controllers/adminController");
 
 router.post("/newadmin", auth.verifyAdmin, addAdminController);
-router.post("/login", adminLoginController);
 router.get("/profile", auth.verifyAdmin, getAdminProfileController);
 router.put(
   "/profile/update",

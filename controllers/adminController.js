@@ -1,5 +1,4 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const admin = require("../models/userModel");
 
 const addAdminController = (req, res) => {
@@ -29,23 +28,6 @@ const addAdminController = (req, res) => {
         .catch(function (e) {
           res.json({ msg: e, success: false });
         });
-    });
-  });
-};
-
-const adminLoginController = (req, res) => {
-  const email = req.body.email;
-  user.findOne({ email: email }).then((admin_data) => {
-    if (admin_data === null) {
-      return res.json({ msg: "Email Not Found", success: false });
-    }
-    const password = req.body.password;
-    bcryptjs.compare(password, user_data.password, (e, result) => {
-      if (result === false) {
-        return res.json({ msg: "Password Incorrect", success: false });
-      }
-      const token = jwt.sign({ aid: admin_data._id }, "anysecretkey");
-      res.json({ token: token });
     });
   });
 };
@@ -83,7 +65,6 @@ const updateAdminProfileController = (req, res) => {
 
 module.exports = {
   addAdminController,
-  adminLoginController,
   getAdminProfileController,
   updateAdminProfileController,
 };
