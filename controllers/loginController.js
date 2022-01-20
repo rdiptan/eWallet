@@ -14,10 +14,15 @@ const loginController = (req, res) => {
         return res.json({ msg: "Password Incorrect", success: false });
       } else {
         if (user_data.is_admin === true) {
-          const token = jwt.sign(
-            { aid: user_data._id },
-            process.env.JWT_SECRET
-          );
+          if (user_data.is_active === true) {
+            const token = jwt.sign(
+              { aid: user_data._id },
+              process.env.JWT_SECRET
+            );
+          } else {
+            return res.json({ msg: "Account Suspended", success: false });
+          }
+
           res.json({ token: token });
         } else if (user_data.is_admin === false) {
           const token = jwt.sign(

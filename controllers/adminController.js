@@ -1,4 +1,5 @@
 const bcryptjs = require("bcryptjs");
+const user = require("../models/userModel");
 const admin = require("../models/userModel");
 
 const addAdminController = (req, res) => {
@@ -34,7 +35,8 @@ const addAdminController = (req, res) => {
 
 const getAdminProfileController = (req, res) => {
   user
-    .findById(req.adminInfo._id).select("-password", "-__v", "-is_admin", "-_id")
+    .findById(req.adminInfo._id)
+    .select("-password", "-__v", "-is_admin", "-_id")
     .then((admin_data) => {
       res.json({ admin_data, success: true });
     })
@@ -63,8 +65,34 @@ const updateAdminProfileController = (req, res) => {
     });
 };
 
+const viewAllAdminsController = (req, res) => {
+  user
+    .find({ is_admin: true })
+    .select("-password", "-__v", "-is_admin", "-_id")
+    .then((admin_data) => {
+      res.json({ admin_data, success: true });
+    })
+    .catch((e) => {
+      res.json({ msg: e, success: false });
+    });
+};
+
+const removeAdminController = (req, res) => {
+  const admin_id = req.params.id;
+  user
+    .updateOne({ _id: admin_id }, { is_active: false })
+    .then(function () {
+      res.json({ msg: "Admin Removed Successfully", success: true });
+    })
+    .catch(function (e) {
+      res.json({ msg: e, success: false });
+    });
+};
+
 module.exports = {
   addAdminController,
   getAdminProfileController,
   updateAdminProfileController,
+  viewAllAdminsController,
+  removeAdminController,
 };

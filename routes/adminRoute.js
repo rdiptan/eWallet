@@ -7,6 +7,8 @@ const {
   addAdminController,
   getAdminProfileController,
   updateAdminProfileController,
+  viewAllAdminsController,
+  removeAdminController,
 } = require("../controllers/adminController");
 
 router.post("/newadmin", auth.verifyAdmin, addAdminController);
@@ -17,5 +19,7 @@ router.put(
   uploadProfile.single("image"),
   updateAdminProfileController
 );
+router.get("/alladmins", auth.verifyAdmin, viewAllAdminsController);
+router.put("/remove/:id", auth.verifyAdmin, removeAdminController);
 
 module.exports = router;

@@ -16,7 +16,7 @@ const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
 const transactionRoute = require("./routes/transactionRoute");
-app.use("/user/transaction",transactionRoute);
+app.use("/transaction",transactionRoute);
 
 const blogRoute = require("./routes/blogRoute");
 app.use("/blog", blogRoute);
