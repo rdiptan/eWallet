@@ -36,4 +36,38 @@ const loginController = (req, res) => {
   });
 };
 
-module.exports = { loginController };
+const changePassword = (req, res) => {
+  const id = req.userInfo._id;
+  const old_password = req.body.old_password;
+  const new_password = req.body.new_password;
+  user.findOne({ _id: id }).then((user_data) => {
+    const password = user_data.password;
+    bcryptjs.compare(old_password, password, (e, result) => {
+      if (result === false) {
+        return res.json({ msg: "Old Password Incorrect", success: false });
+      } else {
+        bcryptjs.hash(new_password, 10, (error, hash) => {
+          const new_password = hash;
+          user.updateOne(
+            { _id: id },
+            { $set: { password: new_password } },
+            (err, result) => {
+              if (err) {
+                return res.json({
+                  msg: "Password Update Failed",
+                  success: false,
+                });
+              }
+              return res.json({
+                msg: "Password Updated Successfully",
+                success: true,
+              });
+            }
+          );
+        });
+      }
+    });
+  });
+};
+
+module.exports = { loginController, changePassword };
