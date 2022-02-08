@@ -34,9 +34,8 @@ const getBlogController = (req, res) => {
   blog
     .find({ is_published: true })
     .sort({ updated_at: -1 })
-    .select("-__v", "-author", "-is_published", "-created_at")
     .then((result) => {
-      if (result === null) {
+      if (result.length === 0) {
         res.json({
           msg: "No blog found",
           success: false,
@@ -83,6 +82,13 @@ const viewBlogAdminController = (req, res) => {
     .sort({ updated_at: -1 })
     .populate("author")
     .then((result) => {
+      if (result.length === 0) {
+        res.json({
+          msg: "No blog found",
+          success: false,
+        });
+        return;
+      }
       res.json({
         msg: "Blog list",
         data: result,

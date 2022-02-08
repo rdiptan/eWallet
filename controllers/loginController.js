@@ -19,17 +19,16 @@ const loginController = (req, res) => {
               { aid: user_data._id },
               process.env.JWT_SECRET
             );
+            res.json({ admin_token: token });
           } else {
             return res.json({ msg: "Account Suspended", success: false });
           }
-
-          res.json({ token: token });
         } else if (user_data.is_admin === false) {
           const token = jwt.sign(
             { uid: user_data._id },
             process.env.JWT_SECRET
           );
-          res.json({ token: token });
+          res.json({ user_token: token });
         }
       }
     });

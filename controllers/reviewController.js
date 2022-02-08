@@ -32,7 +32,7 @@ getReviewController = (req, res) => {
     .populate("reviewer")
     .sort({ rating: -1 })
     .then((result) => {
-      if (result === null) {
+      if (result.length === 0) {
         res.json({
           msg: "No review found",
           success: false,
@@ -56,7 +56,7 @@ getReviewController = (req, res) => {
 viewReviewController = (req, res) => {
   reviewer_id = req.userInfo._id;
   review
-    .findOne({ reviewer: reviewer_id })
+    .findOne({ reviewer: reviewer_id }).select("-_id -__v -reviewer")
     .then((result) => {
       res.json({
         result,
@@ -103,9 +103,8 @@ deleteReviewController = (req, res) => {
   reviewer_id = req.userInfo._id;
   review
     .findOneAndDelete({ reviewer: reviewer_id })
-    .then((result) => {
+    .then(() => {
       res.json({
-        result,
         msg: "Review successfully deleted",
         success: true,
       });
