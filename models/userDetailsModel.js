@@ -6,6 +6,8 @@ const userDetailsSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: user,
+    required: true,
+    unique: true,
   },
   phone: {
     type: String,
@@ -21,6 +23,9 @@ const userDetailsSchema = new Schema({
     type: String,
     trim: true,
     maxlength: 50,
+  },
+  citizenship_proof: {
+    type: String,
   },
   dob: {
     type: Date,

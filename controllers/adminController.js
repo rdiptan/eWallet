@@ -1,5 +1,5 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const user = require("../models/userModel");
 const admin = require("../models/userModel");
 
 const addAdminController = (req, res) => {
@@ -33,26 +33,10 @@ const addAdminController = (req, res) => {
   });
 };
 
-const adminLoginController = (req, res) => {
-  const email = req.body.email;
-  user.findOne({ email: email }).then((admin_data) => {
-    if (admin_data === null) {
-      return res.json({ msg: "Email Not Found", success: false });
-    }
-    const password = req.body.password;
-    bcryptjs.compare(password, user_data.password, (e, result) => {
-      if (result === false) {
-        return res.json({ msg: "Password Incorrect", success: false });
-      }
-      const token = jwt.sign({ aid: admin_data._id }, "anysecretkey");
-      res.json({ token: token });
-    });
-  });
-};
-
 const getAdminProfileController = (req, res) => {
   user
-    .findById(req.adminInfo._id).select("-password", "-__v", "-is_admin", "-_id")
+    .findById(req.adminInfo._id)
+    .select("-password", "-__v", "-is_admin", "-_id")
     .then((admin_data) => {
       res.json({ admin_data, success: true });
     })
@@ -81,9 +65,34 @@ const updateAdminProfileController = (req, res) => {
     });
 };
 
+const viewAllAdminsController = (req, res) => {
+  user
+    .find({ is_admin: true })
+    .select("-password", "-__v", "-is_admin", "-_id")
+    .then((admin_data) => {
+      res.json({ admin_data, success: true });
+    })
+    .catch((e) => {
+      res.json({ msg: e, success: false });
+    });
+};
+
+const removeAdminController = (req, res) => {
+  const admin_id = req.params.id;
+  user
+    .updateOne({ _id: admin_id }, { is_active: false })
+    .then(function () {
+      res.json({ msg: "Admin Removed Successfully", success: true });
+    })
+    .catch(function (e) {
+      res.json({ msg: e, success: false });
+    });
+};
+
 module.exports = {
   addAdminController,
-  adminLoginController,
   getAdminProfileController,
   updateAdminProfileController,
+  viewAllAdminsController,
+  removeAdminController,
 };

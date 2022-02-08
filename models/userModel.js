@@ -38,6 +38,11 @@ const user = mongoose.model("user", {
     required: true,
     default: false,
   },
+  is_active: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
 
 module.exports = user;

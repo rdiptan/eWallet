@@ -27,11 +27,11 @@ const newTransactionController = (req, res) => {
         userdetail
           .findOne({ user: from_id })
           .then(function (from_data) {
-            if (from_data.balance < data.balance) {
+            if (from_data.balance < transaction_amount) {
               res.json({ msg: "Insufficient Balance", success: false });
               return;
             }
-            from_data.balance = data.balance - transaction_amount;
+            from_data.balance = from_data.balance - transaction_amount;
             from_data
               .save()
               .then(function () {
@@ -42,7 +42,7 @@ const newTransactionController = (req, res) => {
                 userdetail
                   .findOne({ user: to_id })
                   .then(function (to_data) {
-                    to_data.balance = data.balance + transaction_amount;
+                    to_data.balance = to_data.balance + transaction_amount;
                     to_data
                       .save()
                       .then(function () {
