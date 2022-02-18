@@ -28,7 +28,10 @@ const loginController = (req, res) => {
             { uid: user_data._id },
             process.env.JWT_SECRET
           );
-          res.json({ user_token: token });
+          res.json({
+            success: true,
+            user_token: token,
+          });
         }
       }
     });
@@ -36,7 +39,7 @@ const loginController = (req, res) => {
 };
 
 const changePassword = (req, res) => {
-  const id = req.userInfo._id;
+  const id = req.adminInfo._id;
   const old_password = req.body.old_password;
   const new_password = req.body.new_password;
   user.findOne({ _id: id }).then((user_data) => {

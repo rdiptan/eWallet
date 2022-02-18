@@ -45,9 +45,8 @@ const getprofileController = (req, res) => {
   const user_id = req.userInfo._id;
   userdetail
     .findOne({ user: user_id }).populate("user")
-    .select("-password -is_admin -is_active -__v -_id -createdAt")
-    .then((user_data) => {
-      res.json({ user_data, success: true });
+    .then((data) => {
+      res.json({ data, success: true });
     })
     .catch((e) => {
       res.json({ msg: e, success: false });

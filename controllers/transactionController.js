@@ -115,12 +115,14 @@ const viewTransactionController = (req, res) => {
           category: 1,
           reason: 1,
           transferred_at: 1,
-          debit: {
-            $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
-          },
-          credit: {
-            $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
-          },
+          debit:1,
+          credit:1,
+          // debit: {
+          //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
+          // },
+          // credit: {
+          //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
+          // },
           from_user: { $arrayElemAt: ["$from_user", 0] },
           to_user: { $arrayElemAt: ["$to_user", 0] },
         },

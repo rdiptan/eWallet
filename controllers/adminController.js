@@ -13,7 +13,7 @@ const addAdminController = (req, res) => {
     const lname = req.body.lname;
     const is_admin = true;
     bcryptjs.hash(password, 10, function (e, hashed_password) {
-      const userData = new user({
+      const userData = new admin({
         password: hashed_password,
         email: email,
         fname: fname,
