@@ -28,11 +28,11 @@ writeReviewController = (req, res) => {
 
 getReviewController = (req, res) => {
   review
-    .find({})
+    .find({ is_published: true })
     .populate("reviewer")
     .sort({ rating: -1 })
     .then((result) => {
-      if (result === null) {
+      if (result.length === 0) {
         res.json({
           msg: "No review found",
           success: false,
@@ -57,6 +57,7 @@ viewReviewController = (req, res) => {
   reviewer_id = req.userInfo._id;
   review
     .findOne({ reviewer: reviewer_id })
+    .select("-_id -__v -reviewer")
     .then((result) => {
       res.json({
         result,
@@ -103,9 +104,90 @@ deleteReviewController = (req, res) => {
   reviewer_id = req.userInfo._id;
   review
     .findOneAndDelete({ reviewer: reviewer_id })
+    .then(() => {
+      res.json({
+        msg: "Review successfully deleted",
+        success: true,
+      });
+    })
+    .catch((err) => {
+      res.json({
+        msg: err,
+        success: false,
+      });
+    });
+};
+
+viewReviewAdminController = (req, res) => {
+  review
+    .find({})
+    .populate("reviewer")
+    .sort({ rating: 1 })
     .then((result) => {
+      if (result.length === 0) {
+        res.json({
+          msg: "No review found",
+          success: false,
+        });
+        return;
+      }
       res.json({
         result,
+        msg: "Reviews successfully fetched",
+        success: true,
+      });
+    })
+    .catch((err) => {
+      res.json({
+        msg: err,
+        success: false,
+      });
+    });
+};
+
+publishReviewController = (req, res) => {
+  review_id = req.params.id;
+  review
+    .findOne({ _id: review_id })
+    .then((result) => {
+      console.log(result)
+      if (result.is_published == true) {
+        result.is_published = false;
+      } else {
+        result.is_published = true;
+      }
+      console.log(result)
+      result
+        .save()
+        .then((data) => {
+          console.log(data)
+          res.json({
+            data,
+            msg: "Review successfully updated",
+            success: true,
+          });
+        })
+        .catch((err) => {
+          res.json({
+            msg: err,
+            success: false,
+          });
+        });
+    })
+    .catch((err) => {
+      res.json({
+        msg: err,
+        success: false,
+      });
+    });
+};
+
+deleteReviewAdminController = (req, res) => {
+  review_id = req.params.id;
+  review
+    .findOneAndDelete({ _id: review_id })
+    .then(() => {
+      res.json({
         msg: "Review successfully deleted",
         success: true,
       });
@@ -124,4 +206,7 @@ module.exports = {
   viewReviewController,
   updateReviewController,
   deleteReviewController,
+  viewReviewAdminController,
+  publishReviewController,
+  deleteReviewAdminController,
 };

@@ -24,7 +24,7 @@ module.exports.verifyAdmin = (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
     const data = jwt.verify(token, process.env.JWT_SECRET);
     user
-      .findOne({ $and: [{ _id: data.uid }, { is_admin: true }] })
+      .findOne({ $and: [{ _id: data.aid }, { is_admin: true }] })
       .then(function (result) {
         req.adminInfo = result;
         next();

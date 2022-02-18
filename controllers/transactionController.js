@@ -35,10 +35,15 @@ const newTransactionController = (req, res) => {
             from_data
               .save()
               .then(function () {
-                transaction.updateOne(
-                  { _id: result._id },
-                  { $set: { debit: true } }
-                );
+                transaction
+                  .findOne({ _id: result._id })
+                  .then(function (transaction_data) {
+                    transaction_data.debit = true;
+                    transaction_data.save();
+                  })
+                  .catch(function (err) {
+                    res.json({ msg: err, success: false });
+                  });
                 userdetail
                   .findOne({ user: to_id })
                   .then(function (to_data) {
@@ -46,10 +51,15 @@ const newTransactionController = (req, res) => {
                     to_data
                       .save()
                       .then(function () {
-                        transaction.updateOne(
-                          { _id: result._id },
-                          { $set: { credit: true } }
-                        );
+                        transaction
+                          .findOne({ _id: result._id })
+                          .then(function (transaction_data) {
+                            transaction_data.credit = true;
+                            transaction_data.save();
+                          })
+                          .catch(function (err) {
+                            res.json({ msg: err, success: false });
+                          });
                         res.json({
                           msg: "Transaction Successful",
                           success: true,
@@ -84,7 +94,7 @@ const viewTransactionController = (req, res) => {
       { $match: { $or: [{ from: user_id }, { to: user_id }] } },
       {
         $lookup: {
-          from: "user",
+          from: "users",
           localField: "from",
           foreignField: "_id",
           as: "from_user",
@@ -92,7 +102,7 @@ const viewTransactionController = (req, res) => {
       },
       {
         $lookup: {
-          from: "user",
+          from: "users",
           localField: "to",
           foreignField: "_id",
           as: "to_user",
@@ -105,19 +115,21 @@ const viewTransactionController = (req, res) => {
           category: 1,
           reason: 1,
           transferred_at: 1,
-          debit: {
-            $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
-          },
-          credit: {
-            $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
-          },
+          debit:1,
+          credit:1,
+          // debit: {
+          //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
+          // },
+          // credit: {
+          //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
+          // },
           from_user: { $arrayElemAt: ["$from_user", 0] },
           to_user: { $arrayElemAt: ["$to_user", 0] },
         },
       },
     ])
     .then(function (data) {
-      if (data === null) {
+      if (data.length === 0) {
         res.json({ msg: "No Transaction Found", success: false });
         return;
       }
@@ -130,48 +142,11 @@ const viewTransactionController = (req, res) => {
 
 const viewTransactionControllerById = (req, res) => {
   const transaction_id = req.params.id;
+  console.log(transaction_id);
   transaction
-    .aggregate([
-      { $match: { _id: transaction_id } },
-      {
-        $lookup: {
-          from: "user",
-          localField: "from",
-          foreignField: "_id",
-          as: "from_user",
-        },
-      },
-      {
-        $lookup: {
-          from: "user",
-          localField: "to",
-          foreignField: "_id",
-          as: "to_user",
-        },
-      },
-      {
-        $project: {
-          from: 1,
-          to: 1,
-          amount: 1,
-          category: 1,
-          reason: 1,
-          debit: 1,
-          credit: 1,
-          transferred_at: 1,
-          from_user: {
-            fname: 1,
-            lname: 1,
-            email: 1,
-          },
-          to_user: {
-            fname: 1,
-            lname: 1,
-            email: 1,
-          },
-        },
-      },
-    ])
+    .findOne({ _id: transaction_id })
+    .populate("from")
+    .populate("to")
     .then(function (data) {
       if (data === null) {
         res.json({ msg: "No Transaction Found", success: false });

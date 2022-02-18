@@ -45,9 +45,8 @@ const getprofileController = (req, res) => {
   const user_id = req.userInfo._id;
   userdetail
     .findOne({ user: user_id }).populate("user")
-    .select("-password", "-__v", "-_id", "-is_admin")
-    .then((user_data) => {
-      res.json({ user_data, success: true });
+    .then((data) => {
+      res.json({ data, success: true });
     })
     .catch((e) => {
       res.json({ msg: e, success: false });
@@ -61,7 +60,7 @@ const updateProfileController = (req, res) => {
   const url = req.protocol + "://" + req.get("host");
   const image = url + "/images/" + req.file.filename;
   user
-    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image })
+    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image }, { new: true })
     .then(function (user_data) {
       res.json({
         user_data,
@@ -75,11 +74,11 @@ const updateProfileController = (req, res) => {
 };
 
 const kycUpdateController = (req, res) => {
-  const user_id = req.UserInfo._id;
+  const user_id = req.userInfo._id;
   const phone = req.body.phone;
   const address = req.body.address;
   const citizenship = req.body.citizenship;
-  const citizenship_proof = req.file.filename;
+  const document = req.file.filename;
   const dob = req.body.dob;
   userdetail
     .findOneAndUpdate(
@@ -89,11 +88,12 @@ const kycUpdateController = (req, res) => {
           phone: phone,
           address: address,
           citizenship: citizenship,
-          citizenship_proof: citizenship_proof,
+          citizenship_proof: document,
           dob: dob,
           is_verified: false,
         },
-      }
+      },
+      { new: true }
     )
     .then((user_details) => {
       res.json({

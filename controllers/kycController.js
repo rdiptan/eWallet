@@ -1,3 +1,4 @@
+const user = require("../models/userModel");
 const userdetail = require("../models/userDetailsModel");
 const transaction = require("../models/transactionModel");
 
@@ -50,23 +51,23 @@ const unsuccessfulTransactionController = (req, res) => {
       { $match: { $or: [{ debit: false }, { credit: false }] } },
       {
         $lookup: {
-          from: "user",
+          from: "users",
           localField: "from",
           foreignField: "_id",
           as: "from_user",
-        },
+        }
       },
       {
         $lookup: {
-          from: "user",
+          from: "users",
           localField: "to",
           foreignField: "_id",
           as: "to_user",
-        },
+        }
       },
     ])
     .then(function (data) {
-      if (data === null) {
+      if (data.length === 0) {
         res.json({ msg: "No Unsuccessful Transaction Found", success: true });
         return;
       }
@@ -109,14 +110,19 @@ const addBalanceController = (req, res) => {
               to_data
                 .save()
                 .then(function () {
-                  transaction.updateOne(
-                    { _id: result._id },
-                    { $set: { credit: true } }
-                  );
-                  res.json({
-                    msg: "Transaction Successful",
-                    success: true,
-                  });
+                  transaction
+                    .findOne({ _id: result._id })
+                    .then(function (result) {
+                      result.credit = true;
+                      result.save();
+                      res.json({
+                        msg: "Fund Added Successfully",
+                        success: true,
+                      });
+                    })
+                    .catch(function (err) {
+                      res.json({ msg: err, success: false });
+                    });
                 })
                 .catch(function (err) {
                   res.json({ msg: err, success: false });

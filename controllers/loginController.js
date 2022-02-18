@@ -19,17 +19,19 @@ const loginController = (req, res) => {
               { aid: user_data._id },
               process.env.JWT_SECRET
             );
+            res.json({ admin_token: token });
           } else {
             return res.json({ msg: "Account Suspended", success: false });
           }
-
-          res.json({ token: token });
         } else if (user_data.is_admin === false) {
           const token = jwt.sign(
             { uid: user_data._id },
             process.env.JWT_SECRET
           );
-          res.json({ token: token });
+          res.json({
+            success: true,
+            user_token: token,
+          });
         }
       }
     });
@@ -37,7 +39,7 @@ const loginController = (req, res) => {
 };
 
 const changePassword = (req, res) => {
-  const id = req.userInfo._id;
+  const id = req.adminInfo._id;
   const old_password = req.body.old_password;
   const new_password = req.body.new_password;
   user.findOne({ _id: id }).then((user_data) => {
