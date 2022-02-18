@@ -39,7 +39,7 @@ const loginController = (req, res) => {
 };
 
 const changePassword = (req, res) => {
-  const id = req.adminInfo._id;
+  const id = req.userInfo._id;
   const old_password = req.body.old_password;
   const new_password = req.body.new_password;
   user.findOne({ _id: id }).then((user_data) => {

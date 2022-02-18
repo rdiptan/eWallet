@@ -87,11 +87,11 @@ const newTransactionController = (req, res) => {
   });
 };
 
-const viewTransactionController = (req, res) => {
+const viewTransactionCreditController = (req, res) => {
   const user_id = req.userInfo._id;
   transaction
     .aggregate([
-      { $match: { $or: [{ from: user_id }, { to: user_id }] } },
+      { $match: { to: user_id } },
       {
         $lookup: {
           from: "users",
@@ -115,16 +115,71 @@ const viewTransactionController = (req, res) => {
           category: 1,
           reason: 1,
           transferred_at: 1,
-          debit:1,
-          credit:1,
+          debit: 1,
+          credit: 1,
+          __v: 1,
           // debit: {
           //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
           // },
           // credit: {
           //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
           // },
-          from_user: { $arrayElemAt: ["$from_user", 0] },
-          to_user: { $arrayElemAt: ["$to_user", 0] },
+          from: { $arrayElemAt: ["$from_user", 0] },
+          to: { $arrayElemAt: ["$to_user", 0] },
+        },
+      },
+    ])
+    .then(function (data) {
+      if (data.length === 0) {
+        res.json({ msg: "No Transaction Found", success: false });
+        return;
+      }
+      res.json({ data, success: true });
+    })
+    .catch(function (err) {
+      res.json({ msg: err, success: false });
+    });
+};
+
+const viewTransactionDebitController = (req, res) => {
+  const user_id = req.userInfo._id;
+  transaction
+    .aggregate([
+      { $match: { from: user_id } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "from",
+          foreignField: "_id",
+          as: "from_user",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "to",
+          foreignField: "_id",
+          as: "to_user",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          amount: 1,
+          category: 1,
+          reason: 1,
+          transferred_at: 1,
+          debit: 1,
+          credit: 1,
+          __v: 1,
+          // debit: {
+          //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
+          // },
+          // credit: {
+          //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
+          // },
+          from: { $arrayElemAt: ["$from_user", 0] },
+          to: { $arrayElemAt: ["$to_user", 0] },
         },
       },
     ])
@@ -142,7 +197,6 @@ const viewTransactionController = (req, res) => {
 
 const viewTransactionControllerById = (req, res) => {
   const transaction_id = req.params.id;
-  console.log(transaction_id);
   transaction
     .findOne({ _id: transaction_id })
     .populate("from")
@@ -159,8 +213,51 @@ const viewTransactionControllerById = (req, res) => {
     });
 };
 
+const summaryTransactionController = (req, res) => {
+  const user_id = req.userInfo._id;
+  var name, balance, debit, credit;
+  userdetail
+    .findOne({ user: user_id })
+    .populate("user")
+    .then(function (data) {
+      name = data.user.fname + " " + data.user.lname;
+      balance = data.balance;
+      transaction
+        .find({ from: user_id })
+        .then(function (data) {
+          debit = data.reduce((acc, cur) => acc + cur.amount, 0);
+          transaction
+            .find({ to: user_id })
+            .then(function (data) {
+              credit = data.reduce((acc, cur) => acc + cur.amount, 0);
+              data = {
+                name: name,
+                balance: balance,
+                debit: debit,
+                credit: credit,
+              };
+              res.json({
+                data,
+                success: true,
+              });
+            })
+            .catch(function (err) {
+              res.json({ msg: err, success: false });
+            });
+        })
+        .catch(function (err) {
+          res.json({ msg: err, success: false });
+        });
+    })
+    .catch(function (err) {
+      res.json({ msg: err, success: false });
+    });
+};
+
 module.exports = {
   newTransactionController,
-  viewTransactionController,
+  viewTransactionDebitController,
+  viewTransactionCreditController,
   viewTransactionControllerById,
+  summaryTransactionController,
 };

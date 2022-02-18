@@ -1,41 +1,55 @@
 // use the path of your model
-const User = require("../models/userModel");
+const Blog = require("../models/blogModel");
 const mongoose = require("mongoose");
+
 // use the new name of the database
 const url = "mongodb://localhost:27017/eWallet_test";
+
 beforeAll(async () => {
   await mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
 });
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
-describe("User Schema test anything", () => {
+
+describe("Blog Schema test anything", () => {
   // the code below is for get testing
-  it("to test the get User is working or not", async () => {
-    const status = await User.find();
-    expect(status.ok);
-  });
 
-  it("to test the get User is working or not", async () => {
-    const status = await User.findById("5f4e6b5d6f3b8e0e9c9f9b9f");
-    expect(status.ok);
-  });
-
-  it("Login ", () => {
-    const loginController = {
-      email: "admin@ewallet.com",
-      password:"admin",
+  it("Test for Create Blog", () => {
+    const createBlog = {
+      title: "This is a first test blog",
+      description: "test blog",
+      content: "blog content",
     };
-    return User.findOne(loginController).then((result) => {
-      expect(result.email).toEqual("");
+
+    return Blog.create(createBlog).then((res) => {
+      expect(res.title).toEqual("This is a first test blog");
     });
   });
 
-  it("to test the get User is working or not", async () => {
-    const status = await User.find();
-    expect(status.ok);
+  it("Test for Delete Blog", async () => {
+    const deleteBlog = await Blog.deleteOne({
+      _id: Object("620cfa6cdb7c4648b2180bf2"),
+    });
+    expect(deleteBlog.ok);
+  });
+
+  it("Test for Update Blog", () => {
+    return Blog.findOneAndUpdate(
+      {
+        _id: Object("620cfa6cdb7c4648b2180bf2"),
+      },
+      {
+        $set: {
+          content: "This is a first test updated blog",
+        },
+      }
+    ).then((res) => {
+      expect(res.content).toEqual("This is a first test updated blog");
+    });
   });
 });

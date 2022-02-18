@@ -44,7 +44,8 @@ const registrationController = (req, res) => {
 const getprofileController = (req, res) => {
   const user_id = req.userInfo._id;
   userdetail
-    .findOne({ user: user_id }).populate("user")
+    .findOne({ user: user_id })
+    .populate("user")
     .then((data) => {
       res.json({ data, success: true });
     })
@@ -57,10 +58,13 @@ const updateProfileController = (req, res) => {
   const id = req.userInfo._id;
   const fname = req.body.fname;
   const lname = req.body.lname;
-  const url = req.protocol + "://" + req.get("host");
-  const image = url + "/images/" + req.file.filename;
+  const image = req.file.filename;
   user
-    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image }, { new: true })
+    .updateOne(
+      { _id: id },
+      { fname: fname, lname: lname, image: image },
+      { new: true }
+    )
     .then(function (user_data) {
       res.json({
         user_data,
@@ -107,9 +111,42 @@ const kycUpdateController = (req, res) => {
     });
 };
 
+const kycDataController = (req, res) => {
+  const user_id = req.userInfo._id;
+  const phone = req.body.phone;
+  const address = req.body.address;
+  const citizenship = req.body.citizenship;
+  const dob = req.body.dob;
+  userdetail
+    .findOneAndUpdate(
+      { user: user_id },
+      {
+        $set: {
+          phone: phone,
+          address: address,
+          citizenship: citizenship,
+          dob: dob,
+          is_verified: false,
+        },
+      },
+      { new: true }
+    )
+    .then((user_details) => {
+      res.json({
+        user_details,
+        msg: "User Details Updated Successfully",
+        success: true,
+      });
+    })
+    .catch((e) => {
+      res.json({ msg: e, success: false });
+    });
+};
+
 module.exports = {
   registrationController,
   getprofileController,
   updateProfileController,
   kycUpdateController,
+  kycDataController,
 };

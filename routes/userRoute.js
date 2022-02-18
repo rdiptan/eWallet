@@ -8,6 +8,7 @@ const {
   getprofileController,
   updateProfileController,
   kycUpdateController,
+  kycDataController,
 } = require("../controllers/userController");
 
 router.post("/registration", registrationController);
@@ -23,6 +24,12 @@ router.put(
   auth.verifyUser,
   upload.single("document"),
   kycUpdateController
+);
+
+router.put(
+  "/kyc/data",
+  auth.verifyUser,
+  kycDataController
 );
 
 module.exports = router;

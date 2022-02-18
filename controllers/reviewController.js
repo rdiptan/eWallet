@@ -57,10 +57,10 @@ viewReviewController = (req, res) => {
   reviewer_id = req.userInfo._id;
   review
     .findOne({ reviewer: reviewer_id })
-    .select("-_id -__v -reviewer")
-    .then((result) => {
+    .select("-_id -__v -reviewer -is_published")
+    .then((data) => {
       res.json({
-        result,
+        data,
         msg: "Review successfully fetched",
         success: true,
       });
@@ -74,6 +74,9 @@ viewReviewController = (req, res) => {
 };
 
 updateReviewController = (req, res) => {
+  console.log(req.body);
+  console.log(req.userInfo);
+  console.log(req.headers);
   reviewer_id = req.userInfo._id;
   rating = req.body.rating;
   comment = req.body.comment;
