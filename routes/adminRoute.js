@@ -13,7 +13,7 @@ const {
 
 router.post("/newadmin", auth.verifyAdmin, addAdminController);
 router.get("/profile", auth.verifyAdmin, getAdminProfileController);
-router.put(
+router.put( 
   "/profile/update",
   auth.verifyAdmin,
   uploadProfile.single("image"),

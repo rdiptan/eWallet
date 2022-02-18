@@ -23,6 +23,7 @@ const kycViewController = (req, res) => {
 };
 
 const kycVerifyController = (req, res) => {
+  console.log(req.body)
   const id = req.params.id;
   userdetail
     .findOneAndUpdate(

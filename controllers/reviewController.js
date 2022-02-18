@@ -156,7 +156,6 @@ publishReviewController = (req, res) => {
       } else {
         result.is_published = true;
       }
-      console.log(result)
       result
         .save()
         .then((data) => {
