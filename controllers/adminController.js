@@ -50,7 +50,11 @@ const updateAdminProfileController = (req, res) => {
   const lname = req.body.lname;
   const image = req.file.filename;
   admin
-    .updateOne({ _id: id }, { fname: fname, lname: lname, image: image }, { new: true })
+    .updateOne(
+      { _id: id },
+      { fname: fname, lname: lname, image: image },
+      { new: true }
+    )
     .then(function (user_data) {
       res.json({
         user_data,
@@ -66,7 +70,7 @@ const updateAdminProfileController = (req, res) => {
 const viewAllAdminsController = (req, res) => {
   admin
     .find({ is_admin: true })
-    .select("-password -is_admin -is_active -__v -_id -createdAt")
+    .select("-password -is_admin -__v")
     .then((admin_data) => {
       res.json({ admin_data, success: true });
     })

@@ -4,21 +4,21 @@ require("dotenv").config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-var cors = require('cors');
+var cors = require("cors");
 
 require("./database/db");
 
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Credentials', true);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", true);
 
   res.header(
-    'Access-Control-Allow-Methods',
-    'GET,HEAD,OPTIONS,POST,PUT,DELETE'
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,OPTIONS,POST,PUT,DELETE"
   );
   res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization'
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization"
   );
   next();
 });
@@ -33,7 +33,7 @@ const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
 const transactionRoute = require("./routes/transactionRoute");
-app.use("/transaction",transactionRoute);
+app.use("/transaction", transactionRoute);
 
 const blogRoute = require("./routes/blogRoute");
 app.use("/blog", blogRoute);
@@ -48,6 +48,9 @@ app.get("/", (req, res) => {
   res.send("API is running!");
 });
 
+app.use(express.static(__dirname + "/images"));
+app.use(express.static(__dirname + "/documents"));
+
 app.all("*", (req, res) => {
   res.status(404).end("Page not Found");
   //   res.status(404).json({
@@ -56,8 +59,8 @@ app.all("*", (req, res) => {
   //   });
 });
 
-app.use(cors());
-app.options('*', cors());
+app.use(cors({ origin: true}));
+app.options("*", cors());
 
 const PORT = process.env.PORT || 3000;
 
