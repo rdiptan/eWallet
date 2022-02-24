@@ -118,12 +118,6 @@ const viewTransactionCreditController = (req, res) => {
           debit: 1,
           credit: 1,
           __v: 1,
-          // debit: {
-          //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
-          // },
-          // credit: {
-          //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
-          // },
           from: { $arrayElemAt: ["$from_user", 0] },
           to: { $arrayElemAt: ["$to_user", 0] },
         },
@@ -172,12 +166,6 @@ const viewTransactionDebitController = (req, res) => {
           debit: 1,
           credit: 1,
           __v: 1,
-          // debit: {
-          //   $cond: { if: { $eq: ["$from", user_id] }, then: 1, else: 0 },
-          // },
-          // credit: {
-          //   $cond: { if: { $eq: ["$to", user_id] }, then: 1, else: 0 },
-          // },
           from: { $arrayElemAt: ["$from_user", 0] },
           to: { $arrayElemAt: ["$to_user", 0] },
         },
@@ -217,17 +205,17 @@ const summaryTransactionController = (req, res) => {
   const user_id = req.userInfo._id;
   var name, balance, debit, credit;
   userdetail
-    .findOne({ user: user_id })
+    .findOne({user: user_id})
     .populate("user")
     .then(function (data) {
       name = data.user.fname + " " + data.user.lname;
       balance = data.balance;
       transaction
-        .find({ from: user_id })
+        .find({$and:[{ from: user_id }, { debit: true }, { credit: true }]})
         .then(function (data) {
           debit = data.reduce((acc, cur) => acc + cur.amount, 0);
           transaction
-            .find({ to: user_id })
+            .find({$and:[{ to: user_id }, { debit: true }, { credit: true }]})
             .then(function (data) {
               credit = data.reduce((acc, cur) => acc + cur.amount, 0);
               data = {

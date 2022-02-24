@@ -2,9 +2,12 @@ const express = require("express");
 const router = new express.Router();
 const auth = require("../middleware/auth");
 
-const {loginController, changePassword} = require("../controllers/loginController");
+const {
+  loginController,
+  changePassword,
+} = require("../controllers/loginController");
 
 router.post("/login", loginController);
-router.put("/change-password",  auth.verifyUser, changePassword);
+router.put("/change-password", auth.verifyAdmin, changePassword);
 
 module.exports = router;

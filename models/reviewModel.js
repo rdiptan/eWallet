@@ -28,7 +28,7 @@ const reviewSchema = new Schema({
   is_published: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 module.exports = mongoose.model("review", reviewSchema);

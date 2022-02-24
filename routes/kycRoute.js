@@ -11,7 +11,11 @@ const {
 
 router.get("/view", auth.verifyAdmin, kycViewController);
 router.put("/verify:id", auth.verifyAdmin, kycVerifyController);
-router.get("/unsuccessful", auth.verifyAdmin, unsuccessfulTransactionController);
+router.get(
+  "/unsuccessful",
+  auth.verifyAdmin,
+  unsuccessfulTransactionController
+);
 router.post("/addBalance", auth.verifyAdmin, addBalanceController);
 
 module.exports = router;

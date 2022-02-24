@@ -25,11 +25,6 @@ router.put(
   upload.single("document"),
   kycUpdateController
 );
-
-router.put(
-  "/kyc/data",
-  auth.verifyUser,
-  kycDataController
-);
+router.put("/kyc/data", auth.verifyUser, kycDataController);
 
 module.exports = router;

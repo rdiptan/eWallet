@@ -59,7 +59,7 @@ app.all("*", (req, res) => {
   //   });
 });
 
-app.use(cors({ origin: true}));
+app.use(cors({ origin: true }));
 app.options("*", cors());
 
 const PORT = process.env.PORT || 3000;
